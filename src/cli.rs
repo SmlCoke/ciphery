@@ -1,0 +1,111 @@
+//! 命令行参数定义模块
+//!
+//! 本模块使用 `clap` 的 derive API 定义了所有的命令行参数结构、
+//! 子命令以及算法枚举，将 CLI 的"长什么样"与"做什么事"分离开来。
+
+use clap::{Parser, Subcommand, ValueEnum};
+
+// ============================================================================
+// CLI 元数据定义 (方便后续统一修改和扩展)
+// ============================================================================
+const CLI_ABOUT: &str =
+    "A lightweight interactive command-line encryption/decryption tool developed in Rust.";
+
+const CLI_LONG_ABOUT: &str = "\
+An interactive command-line encryption/decryption tool based on Rust, supporting multiple cryptographic algorithms.  
+Maintained by SmlCoke(j.feng.st05@gmail.com).  
+
+Source repository link: https://github.com/SmlCoke/ciphery 
+Online demo: http://smlcoke.com
+";
+
+const CLI_AFTER_HELP: &str = "\
+EXAMPLES:
+    # Encrypt the text 'hello' using Caesar cipher with a shift of 3
+    ciphery encrypt -t hello -a caesar -k 3
+
+    # Decrypt the text 'khoor' using Caesar cipher with a shift of 3
+    ciphery decrypt -t khoor -a caesar -k 3
+
+    # Launch without any parameters to enter interactive REPL mode (to be implemented)
+    ciphery
+";
+
+// ============================================================================
+// CLI 参数结构体定义
+// ============================================================================
+
+/// Ciphery - 你的交互式命令行加密解密工具
+#[derive(Parser, Debug)]
+#[command(name = "ciphery")]
+#[command(author = "SmlCoke <https://github.com/SmlCoke, http://smlcoke.com>")]
+#[command(version)]
+#[command(about = CLI_ABOUT, long_about = CLI_LONG_ABOUT)]
+#[command(after_help = CLI_AFTER_HELP)]
+pub struct Cli {
+    /// 使用 Option 包裹子命令。
+    /// 核心逻辑：如果用户输入了子命令，值为 Some；如果只输入了 `ciphery`，值为 None。
+    #[command(subcommand)]
+    pub command: Option<Commands>,
+}
+
+// ============================================================================
+// 子命令定义
+// ============================================================================
+
+/// 定义子命令枚举：Encrypt 和 Decrypt
+#[derive(Subcommand, Debug)]
+pub enum Commands {
+    /// Perform encryption operation
+    Encrypt {
+        /// 要加密的文本 (使用 -t 或 --text)
+        #[arg(short, long)]
+        text: Option<String>,
+
+        /// 指定加密算法
+        #[arg(short, long, value_enum, default_value_t = Algorithm::Caesar)]
+        algo: Algorithm,
+
+        /// 加密密钥 (对于凯撒密码，这是一个数字)
+        #[arg(short, long)]
+        key: Option<String>,
+
+        /// 待加密文本的文件路径
+        #[arg(short, long)]
+        file_path: Option<String>,
+    },
+
+    /// Perform decryption operation
+    Decrypt {
+        /// 要解密的文本
+        #[arg(short, long)]
+        text: Option<String>,
+
+        /// 指定解密算法
+        #[arg(short, long, value_enum, default_value_t = Algorithm::Caesar)]
+        algo: Algorithm,
+
+        /// 解密密钥
+        #[arg(short, long)]
+        key: Option<String>,
+
+        /// 待解密文本的文件路径
+        #[arg(short, long)]
+        file_path: Option<String>,
+    },
+}
+
+// ============================================================================
+// 算法枚举定义
+// ============================================================================
+
+/// 支持的加密算法
+///
+/// 使用 `ValueEnum` 宏使其可以直接作为命令行参数的值被解析。
+/// 如果用户输入了不存在的算法名（如 `--algo ceasar`），Clap 会自动报错并提示正确拼写。
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
+pub enum Algorithm {
+    Caesar,
+    Rot13,
+    Base64,
+}

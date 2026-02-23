@@ -2,3 +2,7 @@
 /target
 # 开发日志与开发笔记
 /dev
+
+# 测试文件
+input.txt
+test.sh
