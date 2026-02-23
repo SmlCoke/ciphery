@@ -1,0 +1,51 @@
+name: Release
+
+# 触发条件：当推送以 'v' 开头的 tag 时（例如 v0.1.0）
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # 定义三个操作系统的编译矩阵
+        include:
+          - os: ubuntu-latest
+            artifact_name: ciphery
+            asset_name: ciphery-linux-amd64
+          - os: macos-latest
+            artifact_name: ciphery
+            asset_name: ciphery-macos-amd64
+          - os: windows-latest
+            artifact_name: ciphery.exe
+            asset_name: ciphery-windows-amd64.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Release
+        run: cargo build --release
+
+      # 重命名编译好的文件，加上系统后缀，防止在 Release 页面名字冲突
+      - name: Rename binary (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: mv target/release/${{ matrix.artifact_name }} target/release/${{ matrix.asset_name }}
+
+      - name: Rename binary (Windows)
+        if: matrix.os == 'windows-latest'
+        run: ren target\release\${{ matrix.artifact_name }} ${{ matrix.asset_name }}
+
+      # 自动创建 Release 并上传对应系统的可执行文件
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/release/${{ matrix.asset_name }}
+          generate_release_notes: true # 自动生成更新日志
