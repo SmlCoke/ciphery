@@ -18,7 +18,27 @@
 
 ## 🚀 安装 (Installation)
 
-目前你可以通过源码直接编译安装。请确保你的电脑上已经安装了 [Rust 环境 (Cargo)](https://www.rust-lang.org/tools/install)。
+### 方式一：直接下载可执行文件（无需 Rust 环境）
+
+前往 [Releases](https://github.com/SmlCoke/ciphery/releases/latest) 页面，下载适合你操作系统的可执行文件：
+
+| 操作系统 | 文件名 |
+|---|---|
+| Windows | `ciphery-windows-amd64.exe` |
+| macOS | `ciphery-macos-amd64` |
+| Linux | `ciphery-linux-amd64` |
+
+下载后：
+- **Windows**：可将文件重命名为 `ciphery.exe`（可选），然后直接运行，或将其所在目录添加到系统 `PATH` 环境变量中。
+- **macOS / Linux**：赋予执行权限并移动到 `PATH` 目录下：
+  ```bash
+  chmod +x ciphery-linux-amd64
+  sudo mv ciphery-linux-amd64 /usr/local/bin/ciphery
+  ```
+
+### 方式二：从源码编译安装
+
+请确保你的电脑上已经安装了 [Rust 环境 (Cargo)](https://www.rust-lang.org/tools/install)。
 
 ```bash
 # 1. 克隆仓库

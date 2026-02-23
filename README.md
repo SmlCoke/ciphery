@@ -18,7 +18,27 @@ A lightweight interactive command-line encryption/decryption tool developed in R
 
 ## 🚀 Installation
 
-Currently, you can install it directly by compiling from the source code. Please ensure you have the [Rust environment (Cargo)](https://www.rust-lang.org/tools/install) installed on your computer.
+### Option 1: Download Pre-built Binary (No Rust Required)
+
+Head over to the [Releases](https://github.com/SmlCoke/ciphery/releases/latest) page and download the executable for your operating system:
+
+| OS | File |
+|---|---|
+| Windows | `ciphery-windows-amd64.exe` |
+| macOS | `ciphery-macos-amd64` |
+| Linux | `ciphery-linux-amd64` |
+
+After downloading:
+- **Windows**: Rename the file to `ciphery.exe` (optional), then run it directly or add its directory to your system `PATH`.
+- **macOS / Linux**: Grant execute permission and move it to a directory in your `PATH`:
+  ```bash
+  chmod +x ciphery-linux-amd64
+  sudo mv ciphery-linux-amd64 /usr/local/bin/ciphery
+  ```
+
+### Option 2: Build from Source
+
+Make sure you have the [Rust toolchain (Cargo)](https://www.rust-lang.org/tools/install) installed.
 
 ```bash
 # 1. Clone the repository
