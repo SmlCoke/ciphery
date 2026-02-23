@@ -18,7 +18,7 @@ pub trait Cipher {
     ///
     /// 成功时返回 `Ok(String)`，失败时返回 `Err(CipherError)`
     fn encrypt(&self, text: &str) -> Result<String, CipherError>;
-    
+
     /// 解密给定的密文
     ///
     /// 成功时返回 `Ok(String)`，失败时返回 `Err(CipherError)`

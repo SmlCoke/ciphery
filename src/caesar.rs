@@ -71,7 +71,7 @@ pub fn decrypt(text: &str, shift: u8) -> String {
     // 解密相当于反向偏移，即加上 26 - (shift % 26)
     let shift = shift % 26;
     let reverse_shift = if shift == 0 { 0 } else { 26 - shift };
-    
+
     // 复用 encrypt 函数，体现代码复用原则
     encrypt(text, reverse_shift)
 }
@@ -156,11 +156,11 @@ mod tests {
         // 测试加密和解密是否能完美还原
         let original = "Rust is awesome! 123";
         let shift = 17;
-        
+
         let encrypted = encrypt(original, shift);
         // encrypted 类型是 String，因此传入 decrypt 时需要转换为 &str
         let decrypted = decrypt(&encrypted, shift);
-        
+
         assert_eq!(original, decrypted);
     }
 
@@ -168,11 +168,11 @@ mod tests {
     fn test_caesar_struct_and_trait() {
         // 测试面向对象风格的 Trait 抽象
         let cipher = Caesar::new(3);
-        
+
         // 调用 Trait 方法，返回的是 Result，所以需要 unwrap()
         let encrypted = cipher.encrypt("hello").unwrap();
         assert_eq!(encrypted, "khoor");
-        
+
         let decrypted = cipher.decrypt(&encrypted).unwrap();
         assert_eq!(decrypted, "hello");
     }
