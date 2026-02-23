@@ -53,3 +53,4 @@ jobs:
         with:
           files: target/release/${{ matrix.asset_name }}
           generate_release_notes: true # 自动生成更新日志
+          fail_on_unmatched_files: true
