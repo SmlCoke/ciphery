@@ -69,9 +69,11 @@ ciphery encrypt --help
 
 
 **交互式菜单展示：**
+
 ![Interactive Mode Placeholder](assets/png/interactive.png)
 
 **命令行执行展示：**
+
 ![CLI Mode Placeholder](assets/png/CLI.png)
 
 ---

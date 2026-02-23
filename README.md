@@ -69,9 +69,11 @@ ciphery encrypt --help
 
 
 **Interactive Menu Display:**
+
 ![Interactive Mode Placeholder](assets/png/interactive.png)
 
 **CLI Execution Display:**
+
 ![CLI Mode Placeholder](assets/png/CLI.png)
 
 ---
