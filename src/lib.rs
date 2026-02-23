@@ -24,3 +24,46 @@ pub trait Cipher {
     /// 成功时返回 `Ok(String)`，失败时返回 `Err(CipherError)`
     fn decrypt(&self, text: &str) -> Result<String, CipherError>;
 }
+
+
+// ==========================================
+// WebAssembly (WASM) 暴露接口
+// ==========================================
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn wasm_encrypt(algo: &str, text: &str, key: &str) -> String {
+    match algo {
+        "caesar" => {
+            // 解析密钥
+            let shift: u8 = key.parse().unwrap_or(0) % 26;
+            let cipher = crate::caesar::Caesar::new(shift);
+            
+            // 调用你原有的 encrypt 方法（根据你的代码结构，这里假设返回 Result<String, _>）
+            match cipher.encrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
+        _ => format!("Algorithm '{}' not supported yet in Web", algo),
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn wasm_decrypt(algo: &str, text: &str, key: &str) -> String {
+    match algo {
+        "caesar" => {
+            let shift: u8 = key.parse().unwrap_or(0) % 26;
+            let cipher = crate::caesar::Caesar::new(shift);
+            
+            match cipher.decrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
+        _ => format!("Algorithm '{}' not supported yet in Web", algo),
+    }
+}
