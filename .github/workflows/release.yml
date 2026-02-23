@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  # Job 1: 在三个操作系统上并行编译，并将产物保存为 Artifact
+  build:
     name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # 定义三个操作系统的编译矩阵
         include:
           - os: ubuntu-latest
             artifact_name: ciphery
@@ -38,7 +38,6 @@ jobs:
       - name: Build Release
         run: cargo build --release
 
-      # 重命名编译好的文件，加上系统后缀，防止在 Release 页面名字冲突
       - name: Rename binary (Linux/macOS)
         if: matrix.os != 'windows-latest'
         run: mv target/release/${{ matrix.artifact_name }} target/release/${{ matrix.asset_name }}
@@ -47,10 +46,33 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: ren target\release\${{ matrix.artifact_name }} ${{ matrix.asset_name }}
 
-      # 自动创建 Release 并上传对应系统的可执行文件
-      - name: Upload Release Asset
+      # 将编译产物保存为 GitHub Artifact（临时存储，供下一个 Job 使用）
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: target/release/${{ matrix.asset_name }}
+
+  # Job 2: 等待所有编译完成后，统一创建 Release 并上传所有文件（只有一个 Job 操作 Release，避免并发冲突）
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # 下载所有编译产物
+      - name: Download all Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List downloaded files
+        run: ls -R artifacts
+
+      # 一次性创建 Release 并上传所有文件
+      - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
-          files: target/release/${{ matrix.asset_name }}
-          generate_release_notes: true # 自动生成更新日志
+          files: artifacts/*
+          generate_release_notes: true
           fail_on_unmatched_files: true
