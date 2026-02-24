@@ -14,7 +14,12 @@ path = "src/main.rs"
 [dependencies]
 clap = { version = "4.5.60", features = ["derive"] }
 dialoguer = "0.12.0"
-wasm-bindgen = "0.2"
+wasm-bindgen = {version = "0.2", optional = true}
+
+# feature 开关，默认情况下不会开启，即默认情况下不会下载以下依赖
+[features]
+wasm = ["wasm-bindgen"]
+# 当启用 wasm feature 时，自动启用 wasm-bindgen 这个可选依赖
 
 # 减小 wasm 文件体积
 [profile.release]

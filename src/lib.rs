@@ -29,10 +29,12 @@ pub trait Cipher {
 // ==========================================
 // WebAssembly (WASM) 暴露接口
 // ==========================================
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_arch = "wasm32")] // 只在编译目标为 wasm32 时生效
+#[cfg(feature = "wasm")] // 只在启用 wasm feature 时生效
 use wasm_bindgen::prelude::*;
 
 #[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 #[wasm_bindgen]
 pub fn wasm_encrypt(algo: &str, text: &str, key: &str) -> String {
     match algo {
@@ -52,6 +54,7 @@ pub fn wasm_encrypt(algo: &str, text: &str, key: &str) -> String {
 }
 
 #[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm")]
 #[wasm_bindgen]
 pub fn wasm_decrypt(algo: &str, text: &str, key: &str) -> String {
     match algo {
