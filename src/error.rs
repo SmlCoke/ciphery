@@ -14,6 +14,8 @@ pub enum CipherError {
     InvalidInput(String),
     /// 密钥无效（例如：密钥长度不符合要求）
     InvalidKey(String),
+    /// 十六进制编码错误
+    HexCodingError(String),
     /// 其他内部错误
     Other(String),
 }
@@ -25,6 +27,7 @@ impl fmt::Display for CipherError {
         match self {
             CipherError::InvalidInput(msg) => write!(f, "无效的输入: {}", msg),
             CipherError::InvalidKey(msg) => write!(f, "无效的密钥: {}", msg),
+            CipherError::HexCodingError(msg) => write!(f, "十六进制编码错误: {}", msg),
             CipherError::Other(msg) => write!(f, "加密引擎内部错误: {}", msg),
         }
     }

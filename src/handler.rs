@@ -3,7 +3,7 @@
 //! 本模块负责接收解析后的命令行参数，并调用对应的加密/解密引擎执行操作。
 //! 将"做什么事"的逻辑与 CLI 参数定义和程序入口分离开来。
 
-use ciphery::{Cipher, caesar, vigenere};
+use ciphery::{Cipher, caesar, vigenere, xor};
 use dialoguer::{Input, Select, theme::ColorfulTheme};
 use std::fs;
 // ciphery代表外部的库Crate，使用具体的包名（如 ciphery、clap、std）代表引入一个外部的 Crate。
@@ -130,7 +130,7 @@ fn handle_interactive() {
         let is_encrypt = action_index == 0;
 
         // ====== Step 2: 选择算法 ======
-        let algorithms = &["Caesar", "ROT13", "Vigenere", "Base64 (coming soon)"];
+        let algorithms = &["Caesar", "ROT13", "Vigenere", "Xor", "Base64 (coming soon)"];
         let algo_index = match Select::with_theme(&theme)
             .with_prompt("Choose an algorithm")
             .items(algorithms)
@@ -148,6 +148,7 @@ fn handle_interactive() {
             0 => Algorithm::Caesar,
             1 => Algorithm::Rot13,
             2 => Algorithm::Vigenere,
+            3 => Algorithm::Xor,
             _ => {
                 println!(
                     "[warning] This algorithm is not implemented yet. Please choose another.\n"
@@ -217,7 +218,7 @@ fn handle_interactive() {
 
         // ====== Step 4: 输入密钥（如果算法需要） ======
         let key: Option<String> = match algorithm {
-            Algorithm::Caesar | Algorithm::Vigenere => {
+            Algorithm::Caesar | Algorithm::Vigenere | Algorithm::Xor=> {
                 let k: String = match Input::with_theme(&theme)
                     .with_prompt("Enter the key (e.g. shift amount, or keyword)")
                     .interact_text()
@@ -276,6 +277,14 @@ fn execute_encrypt(algorithm: Algorithm, text: &str, key: &Option<String>) {
                 Err(e) => println!("[error] Encryption failed:\n{}", e),
             }
         }
+        Algorithm::Xor => {
+            let key = key.as_ref().unwrap();
+            let cipher = xor::Xor::new(key);
+            match cipher.encrypt(text) {
+                Ok(encrypted) => println!("[result] Encrypted text:\n{}", encrypted),
+                Err(e) => println!("[error] Encryption failed:\n{}", e),
+            }
+        }
         _ => {
             println!("[error] Algorithm not implemented yet!");
         }
@@ -304,9 +313,17 @@ fn execute_decrypt(algorithm: Algorithm, text: &str, key: &Option<String>) {
         Algorithm::Vigenere => {
             let key = key.as_ref().unwrap();
             let cipher = vigenere::Vigenere::new(key);
-            match cipher.encrypt(text) {
-                Ok(encrypted) => println!("[result] Encrypted text:\n{}", encrypted),
-                Err(e) => println!("[error] Encryption failed:\n{}", e),
+            match cipher.decrypt(text) {
+                Ok(decrypted) => println!("[result] Decrypted text:\n{}", decrypted),
+                Err(e) => println!("[error] Decryption failed:\n{}", e),
+            }
+        }
+        Algorithm::Xor => {
+            let key = key.as_ref().unwrap();
+            let cipher = xor::Xor::new(key);
+            match cipher.decrypt(text) {
+                Ok(decrypted) => println!("[result] Decrypted text:\n{}", decrypted),
+                Err(e) => println!("[error] Decryption failed:\n{}", e),
             }
         }
         _ => {

@@ -6,6 +6,7 @@
 pub mod caesar;
 pub mod error;
 pub mod vigenere;
+pub mod xor;
 
 // 重新导出（Re-export），方便外部直接使用 `ciphery::CipherError` 和 `ciphery::Cipher`
 pub use error::CipherError;
@@ -50,6 +51,20 @@ pub fn wasm_encrypt(algo: &str, text: &str, key: &str) -> String {
                 Err(e) => format!("Error: {}", e),
             }
         },
+        "rot13" => {
+            let cipher = crate::caesar::Caesar::new(13);
+            match cipher.encrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
+        "vigenere" => {
+            let cipher = crate::vigenere::Vigenere::new(key);
+            match cipher.encrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
         _ => format!("Algorithm '{}' not supported yet in Web", algo),
     }
 }
@@ -63,6 +78,20 @@ pub fn wasm_decrypt(algo: &str, text: &str, key: &str) -> String {
             let shift: u8 = key.parse().unwrap_or(0) % 26;
             let cipher = crate::caesar::Caesar::new(shift);
             
+            match cipher.decrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
+        "rot13" => {
+            let cipher = crate::caesar::Caesar::new(13);
+            match cipher.decrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
+        "vigenere" => {
+            let cipher = crate::vigenere::Vigenere::new(key);
             match cipher.decrypt(text) {
                 Ok(res) => res,
                 Err(e) => format!("Error: {}", e),

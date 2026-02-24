@@ -109,4 +109,5 @@ pub enum Algorithm {
     Rot13,
     Base64,
     Vigenere,
+    Xor,
 }
