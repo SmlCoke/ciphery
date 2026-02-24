@@ -4,14 +4,19 @@ version = "0.1.0"
 edition = "2024"
 
 [lib]
+name = "ciphery"
 crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "ciphery-bin"
+path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4.5.60", features = ["derive"] }
 dialoguer = "0.12.0"
 wasm-bindgen = "0.2"
 
-# 可选：减小 wasm 文件体积
+# 减小 wasm 文件体积
 [profile.release]
 opt-level = "s"
 lto = true

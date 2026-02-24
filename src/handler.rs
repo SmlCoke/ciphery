@@ -65,7 +65,7 @@ fn handle_encrypt(
     execute_encrypt(algorithm, &plaintext, key);
 }
 
-/// 处理解和密命令
+/// 处理解密命令
 fn handle_decrypt(
     text: &Option<String>,
     algo: &Algorithm,
@@ -130,7 +130,7 @@ fn handle_interactive() {
         let is_encrypt = action_index == 0;
 
         // ====== Step 2: 选择算法 ======
-        let algorithms = &["Caesar", "ROT13 (coming soon)", "Base64 (coming soon)"];
+        let algorithms = &["Caesar", "ROT13", "Base64 (coming soon)"];
         let algo_index = match Select::with_theme(&theme)
             .with_prompt("Choose an algorithm")
             .items(algorithms)
@@ -146,6 +146,7 @@ fn handle_interactive() {
 
         let algorithm = match algo_index {
             0 => Algorithm::Caesar,
+            1 => Algorithm::Rot13,
             _ => {
                 println!(
                     "[warning] This algorithm is not implemented yet. Please choose another.\n"
@@ -258,6 +259,14 @@ fn execute_encrypt(algorithm: Algorithm, text: &str, key: &Option<String>) {
                 Err(e) => println!("[error] Encryption failed:\n{}", e),
             }
         }
+        Algorithm::Rot13 => {
+            let shift = 13;
+            let cipher = caesar::Caesar::new(shift);
+            match cipher.encrypt(text) {
+                Ok(encrypted) => println!("[result] Encrypted text:\n{}", encrypted),
+                Err(e) => println!("[error] Encryption failed:\n{}", e),
+            }
+        }
         _ => {
             println!("[error] Algorithm not implemented yet!");
         }
@@ -269,6 +278,14 @@ fn execute_decrypt(algorithm: Algorithm, text: &str, key: &Option<String>) {
     match algorithm {
         Algorithm::Caesar => {
             let shift = parse_caesar_key(key);
+            let cipher = caesar::Caesar::new(shift);
+            match cipher.decrypt(text) {
+                Ok(decrypted) => println!("[result] Decrypted text:\n{}", decrypted),
+                Err(e) => println!("[error] Decryption failed:\n{}", e),
+            }
+        }
+        Algorithm::Rot13 => {
+            let shift = 13;
             let cipher = caesar::Caesar::new(shift);
             match cipher.decrypt(text) {
                 Ok(decrypted) => println!("[result] Decrypted text:\n{}", decrypted),

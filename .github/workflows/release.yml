@@ -19,13 +19,13 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: ciphery
+            artifact_name: ciphery-bin
             asset_name: ciphery-linux-amd64
           - os: macos-latest
-            artifact_name: ciphery
+            artifact_name: ciphery-bin
             asset_name: ciphery-macos-amd64
           - os: windows-latest
-            artifact_name: ciphery.exe
+            artifact_name: ciphery-bin.exe
             asset_name: ciphery-windows-amd64.exe
 
     steps:
@@ -36,7 +36,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Build Release
-        run: cargo build --release
+        run: cargo build --release --bin ciphery-bin
 
       - name: Rename binary (Linux/macOS)
         if: matrix.os != 'windows-latest'

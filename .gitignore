@@ -1,7 +1,9 @@
 # 编译产物
 /target
+
 # 开发日志与开发笔记
 /dev
+*.log
 
 # 测试文件
 input.txt

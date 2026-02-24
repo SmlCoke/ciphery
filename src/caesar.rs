@@ -176,4 +176,18 @@ mod tests {
         let decrypted = cipher.decrypt(&encrypted).unwrap();
         assert_eq!(decrypted, "hello");
     }
+
+    #[test]
+    fn test_rot13() {
+        // Rot13 是 shift = 13 的 caesar 算法，满足加密两次后还原（因为13*2%26=0）
+        // 因此 Rot13 算法不再单独创建 .rs 文件，由本模块完成测试
+        let cipher = Caesar::new(13);
+
+        // 调用 Trait 方法，返回的是 Result，所以需要 unwrap()
+        let encrypted = cipher.encrypt("hello").unwrap();
+        assert_eq!(encrypted, "uryyb");
+
+        let decrypted = cipher.encrypt(&encrypted).unwrap();
+        assert_eq!(decrypted, "hello");
+    }
 }
