@@ -108,4 +108,5 @@ pub enum Algorithm {
     Caesar,
     Rot13,
     Base64,
+    Vigenere,
 }

@@ -5,6 +5,7 @@
 
 pub mod caesar;
 pub mod error;
+pub mod vigenere;
 
 // 重新导出（Re-export），方便外部直接使用 `ciphery::CipherError` 和 `ciphery::Cipher`
 pub use error::CipherError;
