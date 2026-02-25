@@ -11,13 +11,39 @@ use clap::{Parser, Subcommand, ValueEnum};
 const CLI_ABOUT: &str =
     "A lightweight interactive command-line encryption/decryption tool developed in Rust.";
 
-const CLI_LONG_ABOUT: &str = "\
-An interactive command-line encryption/decryption tool based on Rust, supporting multiple cryptographic algorithms.  
-Maintained by SmlCoke(j.feng.st05@gmail.com).  
+// 可视化横幅：clap 的 --help 长描述
+const CLI_LONG_ABOUT: &str = concat!(
+    "\n",
+    "══════════════════════════════════════════════════════════\n",
+    "  ✦  C I P H E R Y    ·    v", env!("CARGO_PKG_VERSION"), "\n",
+    "  A Lightweight Command-Line Encryption / Decryption Tool\n",
+    "══════════════════════════════════════════════════════════\n",
+    "  Author  :  SmlCoke <j.feng.st05@gmail.com>\n",
+    "  Repo    :  https://github.com/SmlCoke/ciphery\n",
+    "  Demo    :  http://smlcoke.com\n",
+    "══════════════════════════════════════════════════════════\n",
+    "\n",
+    "Supports multiple algorithms: Caesar, ROT13, Vigenere, XOR, Base64.\n",
+    "Run without arguments to enter the interactive REPL mode.\n",
+);
 
-Source repository link: https://github.com/SmlCoke/ciphery 
-Online demo: http://smlcoke.com
-";
+/// 在交互式模式（以及任何希望打印横幅的地方）调用此函数。
+pub fn print_banner() {
+    println!(
+        "{}",
+        concat!(
+            "\n",
+            "══════════════════════════════════════════════════════════\n",
+            "  ✦  C I P H E R Y    ·    v", env!("CARGO_PKG_VERSION"), "\n",
+            "  A Lightweight Command-Line Encryption / Decryption Tool\n",
+            "══════════════════════════════════════════════════════════\n",
+            "  Author  :  SmlCoke <j.feng.st05@gmail.com>\n",
+            "  Repo    :  https://github.com/SmlCoke/ciphery\n",
+            "  Demo    :  http://smlcoke.com\n",
+            "══════════════════════════════════════════════════════════",
+        )
+    );
+}
 
 const CLI_AFTER_HELP: &str = "\
 EXAMPLES:

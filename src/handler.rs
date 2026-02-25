@@ -7,7 +7,7 @@ use ciphery::{Cipher, caesar, vigenere, xor};
 use dialoguer::{Input, Select, theme::ColorfulTheme};
 use std::fs;
 // ciphery代表外部的库Crate，使用具体的包名（如 ciphery、clap、std）代表引入一个外部的 Crate。
-use crate::cli::{Algorithm, Commands};
+use crate::cli::{Algorithm, Commands, print_banner};
 // carte:: 代表当前 crate 的根模块，因为 handler.rs 是被 main.rs 声明和引入的模块，所以它属于你的二进制 Crate (Binary Crate)。在这里，crate:: 就等同于从 main.rs 开始查找。
 
 // ====== 公共入口：根据子命令分发执行 ======
@@ -101,8 +101,8 @@ fn handle_decrypt(
 /// 用户直接运行 `ciphery`（不带子命令）时进入此模式。
 /// 通过 `dialoguer` 库提供上下键选择的交互式菜单，循环执行直到用户选择退出。
 fn handle_interactive() {
-    println!("✨ Welcome to Ciphery's interactive mode!");
-    println!("Type your choices below. Select 'Exit' to quit.\n");
+    print_banner();
+    println!("\nType your choices below. Select 'Exit' to quit.\n");
 
     let theme = ColorfulTheme::default();
 

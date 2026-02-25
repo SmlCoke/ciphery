@@ -65,6 +65,13 @@ pub fn wasm_encrypt(algo: &str, text: &str, key: &str) -> String {
                 Err(e) => format!("Error: {}", e),
             }
         },
+        "xor"  => {
+            let cipher = crate::xor::Xor::new(key);
+            match cipher.encrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
         _ => format!("Algorithm '{}' not supported yet in Web", algo),
     }
 }
@@ -92,6 +99,13 @@ pub fn wasm_decrypt(algo: &str, text: &str, key: &str) -> String {
         },
         "vigenere" => {
             let cipher = crate::vigenere::Vigenere::new(key);
+            match cipher.decrypt(text) {
+                Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
+        "xor"  => {
+            let cipher = crate::xor::Xor::new(key);
             match cipher.decrypt(text) {
                 Ok(res) => res,
                 Err(e) => format!("Error: {}", e),
