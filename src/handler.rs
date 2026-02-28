@@ -3,7 +3,7 @@
 //! 本模块负责接收解析后的命令行参数，并调用对应的加密/解密引擎执行操作。
 //! 将"做什么事"的逻辑与 CLI 参数定义和程序入口分离开来。
 
-use ciphery::{Cipher, caesar, vigenere, xor};
+use ciphery::{Cipher, caesar, rail_fence, vigenere, xor};
 use dialoguer::{Input, Select, theme::ColorfulTheme};
 use std::fs;
 // ciphery代表外部的库Crate，使用具体的包名（如 ciphery、clap、std）代表引入一个外部的 Crate。
@@ -130,7 +130,14 @@ fn handle_interactive() {
         let is_encrypt = action_index == 0;
 
         // ====== Step 2: 选择算法 ======
-        let algorithms = &["Caesar", "ROT13", "Vigenere", "Xor", "Base64 (coming soon)"];
+        let algorithms = &[
+            "Caesar",
+            "ROT13",
+            "Vigenere",
+            "Xor",
+            "Rail Fence",
+            "Base64 (coming soon)",
+        ];
         let algo_index = match Select::with_theme(&theme)
             .with_prompt("Choose an algorithm")
             .items(algorithms)
@@ -149,6 +156,7 @@ fn handle_interactive() {
             1 => Algorithm::Rot13,
             2 => Algorithm::Vigenere,
             3 => Algorithm::Xor,
+            4 => Algorithm::RailFence,
             _ => {
                 println!(
                     "[warning] This algorithm is not implemented yet. Please choose another.\n"
@@ -218,7 +226,7 @@ fn handle_interactive() {
 
         // ====== Step 4: 输入密钥（如果算法需要） ======
         let key: Option<String> = match algorithm {
-            Algorithm::Caesar | Algorithm::Vigenere | Algorithm::Xor=> {
+            Algorithm::Caesar | Algorithm::Vigenere | Algorithm::Xor | Algorithm::RailFence => {
                 let k: String = match Input::with_theme(&theme)
                     .with_prompt("Enter the key (e.g. shift amount, or keyword)")
                     .interact_text()
@@ -285,6 +293,16 @@ fn execute_encrypt(algorithm: Algorithm, text: &str, key: &Option<String>) {
                 Err(e) => println!("[error] Encryption failed:\n{}", e),
             }
         }
+        Algorithm::RailFence => {
+            let rails = parse_rail_fence_key(key);
+            match rail_fence::RailFence::new(rails) {
+                Ok(cipher) => match cipher.encrypt(text) {
+                    Ok(encrypted) => println!("[result] Encrypted text:\n{}", encrypted),
+                    Err(e) => println!("[error] Encryption failed:\n{}", e),
+                },
+                Err(e) => println!("[error] Encryption failed:\n{}", e),
+            }
+        }
         _ => {
             println!("[error] Algorithm not implemented yet!");
         }
@@ -323,6 +341,16 @@ fn execute_decrypt(algorithm: Algorithm, text: &str, key: &Option<String>) {
             let cipher = xor::Xor::new(key);
             match cipher.decrypt(text) {
                 Ok(decrypted) => println!("[result] Decrypted text:\n{}", decrypted),
+                Err(e) => println!("[error] Decryption failed:\n{}", e),
+            }
+        }
+        Algorithm::RailFence => {
+            let rails = parse_rail_fence_key(key);
+            match rail_fence::RailFence::new(rails) {
+                Ok(cipher) => match cipher.decrypt(text) {
+                    Ok(decrypted) => println!("[result] Decrypted text:\n{}", decrypted),
+                    Err(e) => println!("[error] Decryption failed:\n{}", e),
+                },
                 Err(e) => println!("[error] Decryption failed:\n{}", e),
             }
         }
@@ -370,6 +398,10 @@ fn validate_key(key: &Option<String>, algorithm: Algorithm) -> bool {
                 println!("[error] No key provided for Vigenere cipher!");
                 false
             }
+            Algorithm::RailFence => {
+                println!("[error] No key provided for Rail Fence cipher!");
+                false
+            }
             // ROT13 / Base64 等不需要密钥的算法可以在这里放行
             _ => true,
         }
@@ -384,6 +416,15 @@ fn parse_caesar_key(key: &Option<String>) -> u8 {
         .parse() // &String => Result<u8, ParseIntError>
         .expect("Key for Caesar cipher must be a number!");
     shift % 26
+}
+
+/// 解析 Rail Fence 的密钥（从 String 转为 usize 栅栏层数）
+fn parse_rail_fence_key(key: &Option<String>) -> usize {
+    key
+        .as_ref()
+        .unwrap()
+        .parse()
+        .expect("Key for Rail Fence cipher must be a number >= 2!")
 }
 
 /// 程序结束时打印信息

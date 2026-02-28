@@ -23,7 +23,7 @@ const CLI_LONG_ABOUT: &str = concat!(
     "  Demo    :  http://smlcoke.com\n",
     "══════════════════════════════════════════════════════════\n",
     "\n",
-    "Supports multiple algorithms: Caesar, ROT13, Vigenere, XOR, Base64.\n",
+    "Supports multiple algorithms: Caesar, ROT13, Vigenere, XOR, Rail Fence, Base64.\n",
     "Run without arguments to enter the interactive REPL mode.\n",
 );
 
@@ -133,6 +133,7 @@ pub enum Commands {
 pub enum Algorithm {
     Caesar,
     Rot13,
+    RailFence,
     Base64,
     Vigenere,
     Xor,

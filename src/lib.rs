@@ -5,6 +5,7 @@
 
 pub mod caesar;
 pub mod error;
+pub mod rail_fence;
 pub mod vigenere;
 pub mod xor;
 
@@ -72,6 +73,16 @@ pub fn wasm_encrypt(algo: &str, text: &str, key: &str) -> String {
                 Err(e) => format!("Error: {}", e),
             }
         },
+        "rail_fence" => {
+            let rails: usize = key.parse().unwrap_or(3);
+            match crate::rail_fence::RailFence::new(rails) {
+                Ok(cipher) => match cipher.encrypt(text) {
+                    Ok(res) => res,
+                    Err(e) => format!("Error: {}", e),
+                },
+                Err(e) => format!("Error: {}", e),
+            }
+        }
         _ => format!("Algorithm '{}' not supported yet in Web", algo),
     }
 }
@@ -108,6 +119,17 @@ pub fn wasm_decrypt(algo: &str, text: &str, key: &str) -> String {
             let cipher = crate::xor::Xor::new(key);
             match cipher.decrypt(text) {
                 Ok(res) => res,
+                Err(e) => format!("Error: {}", e),
+            }
+        },
+        "rail_fence" => {
+            // 解析密钥为栅栏层数
+            let rails: usize = key.parse().unwrap_or(3);
+            match crate::rail_fence::RailFence::new(rails) {
+                Ok(cipher) => match cipher.decrypt(text) {
+                    Ok(res) => res,
+                    Err(e) => format!("Error: {}", e),
+                },
                 Err(e) => format!("Error: {}", e),
             }
         },
